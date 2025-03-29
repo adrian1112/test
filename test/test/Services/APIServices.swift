@@ -24,4 +24,16 @@ class APIService {
                 }
             }
     }
+    func deleteUSer(id: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        let url = "\(baseURL)/users/\(id)"
+        AF.request(url, method: .delete)
+            .validate()
+            .response { response in
+                switch response.result {
+                case .success:
+                    completion(.success(()))
+                case .failure(let error):
+                }
+            }
+    }
 }

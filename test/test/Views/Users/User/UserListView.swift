@@ -17,42 +17,49 @@ struct UserListView: View {
     @EnvironmentObject var loadingVM: LoadingViewModel
     @StateObject var viewModel = UserViewModel()
     @State private var showDetailUser = false
+    @State private var showCreateUser = false
     @State private var selectedUser: User = User()
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false){
-            VStack(spacing: 15) {
-                HStack(){
-                    Spacer()
-                    Text("Lista de usuarios")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 40)
-                    Spacer()
-                }
-                
+            VStack() {
                 ForEach(viewModel.users, id: \.id) { user in
                     UserCell(user: user)
                         .onTapGesture {
                             selectedUser = user
-                            print("usuario seleccionado:", user);
                             showDetailUser.toggle()
                         }
                 }
-                
                 Spacer()
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .reloadUsers)) { _ in
+            viewModel.getUserSaved()
         }
         .onChange(of: viewModel.isLoading) {
             viewModel.isLoading ? loadingVM.showLoading() : loadingVM.hideLoading()
         }
         .onAppear {
+            
             viewModel.fetchUsers()
         }
         .sheet(isPresented: $showDetailUser) {
             UserDetailView(user: $selectedUser)
-                    .presentationDetents([.large])
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showCreateUser) {
+            CreateUserView()
+        }
+        .navigationTitle("list_user_title")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showCreateUser = true
+                }) {
+                    Image(systemName: "plus")
+                }
+            }
         }
     }
 }

@@ -10,67 +10,114 @@ import SwiftUI
 
 struct UserDetailView: View {
     @Binding var user: User
+    @EnvironmentObject var loadingVM: LoadingViewModel
     @Environment(\.dismiss) var dismiss
+    @StateObject var viewModel = UserDetailViewModel()
     @State private var name: String = ""
     @State private var email: String = ""
+    @State private var showAlert: Bool = false
+    @FocusState private var isTextFieldFocused: Bool
+    @State private var showCustomAlert: Bool = false
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Información de usuario")) {
-                    HStack(){
-                        Spacer()
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(Color.gray)
-                            .padding(.trailing, 10)
-                        Spacer()
+            ZStack(){
+                Form {
+                    Section(header: Text("user_detail_title")) {
+                        HStack(){
+                            Spacer()
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .frame(width: 60, height: 60)
+                                .foregroundColor(Color.gray)
+                                .padding(.trailing, 10)
+                            Spacer()
+                        }
+                        
+                        TextField("name", text: $name)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .focused($isTextFieldFocused)
+                        
+                        TextField("email", text: $email)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.emailAddress)
+                            .focused($isTextFieldFocused)
+                    }
+                    if(user.address != nil){
+                        Section(header: Text("address")) {
+                            Text(String(format: NSLocalizedString("street", comment: ""), user.address!.street ?? ""))
+                            Text(String(format: NSLocalizedString("city", comment: ""), user.address!.city ?? ""))
+                            Text(String(format: NSLocalizedString("zip_code", comment: ""), user.address!.zipcode ?? ""))
+                        }
                     }
                     
-                    TextField("Name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                    TextField("Email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.emailAddress)
-                }
-                if(user.address != nil){
-                    Section(header: Text("Address")) {
-                        Text("Street: \(user.address!.street ?? "")")
-                        Text("City: \(user.address!.city ?? "")")
-                        Text("Zip Code: \(user.address!.zipcode ?? "")")
+                    Section(header: Text("contact_info")) {
+                        Text(String(format: NSLocalizedString("phone", comment: ""), user.phone ?? ""))
+                        Text(String(format: NSLocalizedString("website", comment: ""), user.website ?? ""))
+                    }
+                    if(user.company != nil){
+                        Section(header: Text("company")) {
+                            Text(String(format: NSLocalizedString("company_name", comment: ""), user.company!.name ?? ""))
+                            Text("\(user.company!.catchPhrase ?? "")")
+                        }
+                    }
+                    
+                    Button(action: {
+                        viewModel.updateUser(id: user.uniqueId, name: name, email: email)
+                    }) {
+                        Text("save_changes")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
                 }
-                
-                Section(header: Text("Contact Info")) {
-                    Text("Phone: \(user.phone ?? "")")
-                    Text("Website: \(user.website ?? "")")
-                }
-                if(user.company != nil){
-                    Section(header: Text("Company")) {
-                        Text("Company Name: \(user.company!.name ?? "")")
-                        Text("Slogan: \(user.company!.catchPhrase ?? "")")
-                    }
-                }
-                
-                Button(action: {
-                    saveChanges()
-                }) {
-                    Text("Save Changes")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                if showCustomAlert {
+                    CustomAlertView(
+                        title: "Eliminar usuario",
+                        message: "¿Esta seguro de eliminar el usuario?",
+                        primaryButtonText: "Aceptar",
+                        primaryAction: {
+                            viewModel.deleteUser(uniqueId: self.user.uniqueId, id: self.user.id)
+                            showCustomAlert = false
+                        },
+                        secondaryButtonText: "Cancelar",
+                        secondaryAction: {
+                            showCustomAlert = false
+                        }
+                    )
                 }
             }
-            .navigationTitle("Detalle de usuario")
+            .onChange(of: viewModel.isLoading) {
+                viewModel.isLoading ? loadingVM.showLoading() : loadingVM.hideLoading()
+            }
+            .onChange(of: viewModel.goBack) {
+                dismiss()
+            }
+            .onChange(of: viewModel.message) {
+                showAlert = viewModel.message != nil
+            }
+            .navigationTitle("user_detail_title")
             .scrollContentBackground(.hidden)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cerrar") {
+                    Button("close") {
                         dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showCustomAlert = true
+                    }) {
+                        Text("delete")
+                            .foregroundColor(.red)
+                    }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("done") {
+                        isTextFieldFocused = false
                     }
                 }
             }
@@ -78,13 +125,15 @@ struct UserDetailView: View {
                 name = user.name ?? ""
                 email = user.email ?? ""
             }
+            .alert("", isPresented: $showAlert){
+                Button("ok", role: .cancel) { dismiss() }
+            } message: {
+                Text(viewModel.message ?? "")
+            }
+            
         }
         
     }
     
-    private func saveChanges() {
-        print("func guardar: \(user.name), \(user.email)")
-        dismiss()
-    }
 }
 

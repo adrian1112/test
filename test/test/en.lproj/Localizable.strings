@@ -1,0 +1,37 @@
+/* 
+  Localizable.strings
+  test
+
+  Created by Adrian Aguilar on 29/3/25.
+  
+*/
+
+"list_user_title" = "User list";
+"user_detail_title" = "User detail";
+"information" = "Information";
+"contact_info" = "Contact information";
+"address" = "Address";
+"street" = "Street: %@";
+"city" = "City: %@";
+"zip_code" = "Zip Code: %@";
+"phone" = "Phone: %@";
+"website" = "Web site: %@";
+"company" = "Company";
+"company_name" = "Company name %@";
+"name" = "Name";
+"email" = "Email";
+"save_changes" = "Save Changes";
+"close" = "Close";
+"ok" = "Ok";
+"create_user_title" = "Create user";
+"empty_name" = "The name cannot be empty";
+"empty_email" = "The email cannot be empty";
+"invalid_email" = "Please enter a valid email";
+"invalid_phone" = "Enter a valid phone number";
+"update_user_succeed" = "User successfully updated";
+"update_user_error" = "The user was not updated";
+"create_user_succeed" = "User created successfully";
+"create_user_error" = "User not created";
+"done" = "Done";
+"delete" = "Delete";
+"delete_user_error" = "The user was not deleted";
