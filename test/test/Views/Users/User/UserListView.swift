@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 struct Residencia2: Identifiable {
     let id = UUID()
@@ -15,6 +16,7 @@ struct Residencia2: Identifiable {
 
 struct UserListView: View {
     @EnvironmentObject var loadingVM: LoadingViewModel
+    @ObservedResults(User.self) var users
     @StateObject var viewModel = UserViewModel()
     @State private var showDetailUser = false
     @State private var showCreateUser = false
@@ -23,7 +25,7 @@ struct UserListView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false){
             VStack() {
-                ForEach(viewModel.users, id: \.id) { user in
+                ForEach(users, id: \.id) { user in
                     UserCell(user: user)
                         .onTapGesture {
                             selectedUser = user
@@ -33,9 +35,9 @@ struct UserListView: View {
                 Spacer()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .reloadUsers)) { _ in
-            viewModel.getUserSaved()
-        }
+//        .onReceive(NotificationCenter.default.publisher(for: .reloadUsers)) { _ in
+//            viewModel.getUserSaved()
+//        }
         .onChange(of: viewModel.isLoading) {
             viewModel.isLoading ? loadingVM.showLoading() : loadingVM.hideLoading()
         }

@@ -35,3 +35,6 @@
 "done" = "Listo";
 "delete" = "Eliminar";
 "delete_user_error" = "No se elimino el usuario";
+"delete_user_title" = "Eliminar usuario";
+"delete_user_description" = "¿Esta seguro de eliminar el usuario?";
+"cancel" = "Cancelar";

@@ -14,7 +14,8 @@ class PersistenceManager {
     
     private init() {
         do {
-            self.realm = try Realm()
+            let config = Realm.Configuration.defaultConfiguration
+            self.realm = try Realm(configuration: config)
         } catch {
             fatalError("Failed to initialize Realm: \(error)")
         }

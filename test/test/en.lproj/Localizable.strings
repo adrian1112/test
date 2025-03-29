@@ -35,3 +35,6 @@
 "done" = "Done";
 "delete" = "Delete";
 "delete_user_error" = "The user was not deleted";
+"delete_user_title" = "Delete User";
+"delete_user_description" = "Are you sure you want to delete the user?";
+"cancel" = "Cancel";
