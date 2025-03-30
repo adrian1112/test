@@ -29,7 +29,6 @@ class UserDetailViewModel: ObservableObject {
                 self.message = String(format: NSLocalizedString("update_user_succeed", comment: ""))
                 self.showAlert = true
                 self.goBack = true
-                NotificationCenter.default.post(name: .reloadUsers, object: nil)
             case .failure(_):
                 self.message = String(format: NSLocalizedString("update_user_error", comment: ""))
                 self.showAlert = true
@@ -59,7 +58,6 @@ class UserDetailViewModel: ObservableObject {
     
     func deleteLocalUSer(uniqueId: String){
         PersistenceManager.shared.deleteUser(whitUniqueID: uniqueId){ result in
-            NotificationCenter.default.post(name: .reloadUsers, object: nil)
             self.isLoading = false
             switch result {
             case .success():
