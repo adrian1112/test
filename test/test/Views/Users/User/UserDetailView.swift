@@ -32,7 +32,7 @@ struct UserDetailView: View {
                         Text(String(format: NSLocalizedString("website", comment: ""), user.website ?? ""))
                     }
                     if(user.company != nil){
-                        CompanySection()
+                        CompanySection(company: user.company!)
                     }
                     
                     Button(action: {
@@ -45,6 +45,12 @@ struct UserDetailView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                }
+                .onChange(of: viewModel.goBackAction) { dismiss() }
+                .onChange(of: viewModel.message) { showAlert = viewModel.message != nil }
+                .onAppear {
+                    name = user.name ?? ""
+                    email = user.email ?? ""
                 }
                 if showCustomAlert {
                     CustomAlertView(
@@ -65,15 +71,11 @@ struct UserDetailView: View {
             .navigationTitle("user_detail_title")
             .toolbar{ toolbarItems }
             .scrollContentBackground(.hidden)
-            .onAppear {
-                name = user.name ?? ""
-                email = user.email ?? ""
-            }
+            
             .onChange(of: viewModel.isLoading) {
                 viewModel.isLoading ? loadingVM.showLoading() : loadingVM.hideLoading()
             }
-            .onChange(of: viewModel.goBackAction) { dismiss() }
-            .onChange(of: viewModel.message) { showAlert = viewModel.message != nil }
+            
             .alert("", isPresented: $viewModel.showAlert) {
                 Button("ok", role: .cancel) {
                     showAlert = false
@@ -116,7 +118,7 @@ struct UserInfoSection: View {
                 Image(systemName: "person.fill")
                     .resizable()
                     .frame(width: 60, height: 60)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.colorText)
                     .padding(.trailing, 10)
                 Spacer()
             }

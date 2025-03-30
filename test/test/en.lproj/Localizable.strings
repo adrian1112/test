@@ -38,3 +38,5 @@
 "delete_user_title" = "Delete User";
 "delete_user_description" = "Are you sure you want to delete the user?";
 "cancel" = "Cancel";
+"get_location" = "Get location";
+"location_title"= "Your location";

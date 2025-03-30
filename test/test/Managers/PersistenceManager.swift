@@ -25,7 +25,6 @@ class PersistenceManager {
         do {
             try realm.write {
                 for user in users {
-                    print("user to save: ", user)
                     realm.add(user, update: .modified)
                 }
             }

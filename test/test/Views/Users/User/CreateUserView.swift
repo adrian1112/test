@@ -12,6 +12,7 @@ struct CreateUserView: View {
     @EnvironmentObject var loadingVM: LoadingViewModel
     @Environment(\.dismiss) var dismiss
     @StateObject var viewModel = CreateUserViewModel()
+    @StateObject private var locationManager = LocationManager()
     @State private var name: String = ""
     @State private var email: String = ""
     @State private var phone: String = ""
@@ -20,45 +21,57 @@ struct CreateUserView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("information")) {
-                    HStack(){
-                        Spacer()
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(Color.gray)
-                            .padding(.trailing, 10)
-                        Spacer()
+            ZStack {
+                Form {
+                    Section(header: Text("information")) {
+                        HStack(){
+                            Spacer()
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .frame(width: 60, height: 60)
+                                .foregroundColor(Color.gray)
+                                .padding(.trailing, 10)
+                            Spacer()
+                        }
+                        
+                        TextField("name", text: $name)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .focused($isTextFieldFocused)
+                        TextField("email", text: $email)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.emailAddress)
+                            .focused($isTextFieldFocused)
+                        TextField(String(format: NSLocalizedString("phone", comment: ""), ""), text: $phone)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .focused($isTextFieldFocused)
+                            .keyboardType(.phonePad)
+                        if viewModel.errorString != "" {
+                            Text(viewModel.errorString)
+                                .foregroundColor(.red)
+                                .frame(height: 45)
+                        }
                     }
-                    
-                    TextField("name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($isTextFieldFocused)
-                    TextField("email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.emailAddress)
-                        .focused($isTextFieldFocused)
-                    TextField(String(format: NSLocalizedString("phone", comment: ""), ""), text: $phone)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .focused($isTextFieldFocused)
-                        .keyboardType(.phonePad)
-                    if viewModel.errorString != "" {
-                        Text(viewModel.errorString)
-                            .foregroundColor(.red)
-                            .frame(height: 45)
+                    Button("get_location") {
+                        if locationManager.locationAvaliable {
+                            locationManager.showModal = true
+                        }
+                    }
+            
+                    Button(action: {
+                        viewModel.createUser(name: name, email: email, phone: phone)
+                    }) {
+                        Text("save_changes")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
                 }
-        
-                Button(action: {
-                    viewModel.createUser(name: name, email: email, phone: phone)
-                }) {
-                    Text("save_changes")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                if(locationManager.showModal){
+                    LocationModalView(latitude: locationManager.latitude, longitude: locationManager.longitude, action: {
+                        locationManager.showModal = false
+                    })
                 }
             }
             .onChange(of: viewModel.isLoading) {
@@ -72,6 +85,7 @@ struct CreateUserView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("close") {
+                        locationManager.stopUpdating()
                         dismiss()
                     }
                 }

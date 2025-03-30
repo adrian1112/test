@@ -35,9 +35,6 @@ struct UserListView: View {
                 Spacer()
             }
         }
-//        .onReceive(NotificationCenter.default.publisher(for: .reloadUsers)) { _ in
-//            viewModel.getUserSaved()
-//        }
         .onChange(of: viewModel.isLoading) {
             viewModel.isLoading ? loadingVM.showLoading() : loadingVM.hideLoading()
         }

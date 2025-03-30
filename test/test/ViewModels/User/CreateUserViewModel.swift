@@ -45,7 +45,6 @@ class CreateUserViewModel: ObservableObject {
             switch result {
             case .success():
                 self.message = String(format: NSLocalizedString("create_user_succeed", comment: ""))
-                NotificationCenter.default.post(name: .reloadUsers, object: nil)
             case .failure(let error):
                 print( error.localizedDescription)
                 self.message = String(format: NSLocalizedString("create_user_error", comment: ""))

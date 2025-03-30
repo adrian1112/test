@@ -9,7 +9,6 @@ import SwiftUI
 import RealmSwift
 
 class UserViewModel: ObservableObject {
-//    @Published var users: [User] = []
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
     
@@ -30,23 +29,15 @@ class UserViewModel: ObservableObject {
                     PersistenceManager.shared.createUser(users: users){ result in
                         switch result {
                         case .success():
-//                            self?.getUserSaved()
                             self?.error = nil
                         case .failure(let error):
                             self?.error = error.localizedDescription
-//                            self?.users = []
                         }
                     }
                 case .failure(let error):
                     self?.error = error.localizedDescription
-//                    self?.users = []
                 }
             }
         }
     }
-    
-//    func getUserSaved(){
-//        self.users = PersistenceManager.shared.getAllUsers()
-//    }
-    
 }
